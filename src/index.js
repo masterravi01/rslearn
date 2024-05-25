@@ -10,34 +10,6 @@ import connectDB from "./db/index.js";
 
 connectDB()
 
-// ; (async () => {
-//   try {
-//     // Ensure you have imported and configured mongoose and app before this block
-//     const connectionInstance = await mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`);
-//     console.log(`\n MongoDB connected !! DB Host: ${connectionInstance.connection.host}`);
-
-//     // Error handling for the app
-//     app.on('error', (error) => {
-//       console.log("ERROR:", error);
-//       throw error;
-//     });
-
-
-//     // Start the Express server
-//     app.listen(port, () => {
-//       console.log(`App listening on port ${port}`);
-//     });
-
-//   } catch (error) {
-//     console.error('ERROR:', error);
-//     throw error;
-//   }
-// })();
-
-
-
-
-
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
