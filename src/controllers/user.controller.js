@@ -7,6 +7,11 @@ import {
 } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
+import { deleteLocalImage } from "../utils/helpers.js";
+import {
+  CLOUD_AVATAR_FOLDER_NAME,
+  CLOUD_COVERPIC_FOLDER_NAME,
+} from "../constants.js";
 
 const generateAccessAndRefereshTokens = async (userId) => {
   try {
@@ -75,19 +80,6 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 const registerUser = asyncHandler(async (req, res) => {
   const { fullName, email, username, password } = req.body;
 
-  // Check if any required field is missing or empty
-  if ([fullName, email, username, password].some((field) => !field?.trim())) {
-    throw new ApiError(400, "All Fields are required");
-  }
-
-  // Check if the user already exists
-  const existingUser = await User.findOne({
-    $or: [{ email }, { username }],
-  });
-  if (existingUser) {
-    throw new ApiError(409, "User Already Exists with this email & username!");
-  }
-
   // Access the uploaded files
   const avatarLocalPath = req.files?.avatar?.[0]?.path;
   const coverLocalPath = req.files?.coverImage?.[0]?.path;
@@ -96,11 +88,28 @@ const registerUser = asyncHandler(async (req, res) => {
   if (!avatarLocalPath) {
     throw new ApiError(400, "Avatar is required!");
   }
+  // Check if any required field is missing or empty
+  if ([fullName, email, username, password].some((field) => !field?.trim())) {
+    deleteLocalImage(avatarLocalPath, coverLocalPath);
+    throw new ApiError(400, "All Fields are required");
+  }
+
+  // Check if the user already exists
+  const existingUser = await User.findOne({
+    $or: [{ email }, { username }],
+  });
+  if (existingUser) {
+    deleteLocalImage(avatarLocalPath, coverLocalPath);
+    throw new ApiError(409, "User Already Exists with this email & username!");
+  }
 
   // Upload the avatar and cover image to Cloudinary
-  const avatar = await uploadOnCloudinary(avatarLocalPath);
+  const avatar = await uploadOnCloudinary(
+    avatarLocalPath,
+    CLOUD_AVATAR_FOLDER_NAME
+  );
   const coverImage = coverLocalPath
-    ? await uploadOnCloudinary(coverLocalPath)
+    ? await uploadOnCloudinary(coverLocalPath, CLOUD_COVERPIC_FOLDER_NAME)
     : null;
 
   // Check if the avatar upload was successful
@@ -280,7 +289,10 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
   }
 
   // Upload the new avatar to Cloudinary
-  const avatar = await uploadOnCloudinary(avatarLocalPath);
+  const avatar = await uploadOnCloudinary(
+    avatarLocalPath,
+    CLOUD_AVATAR_FOLDER_NAME
+  );
 
   if (!avatar.url) {
     throw new ApiError(400, "Error while uploading avatar");
@@ -325,7 +337,10 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
   }
 
   // Upload the new cover image to Cloudinary
-  const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+  const coverImage = await uploadOnCloudinary(
+    coverImageLocalPath,
+    CLOUD_COVERPIC_FOLDER_NAME
+  );
   if (!coverImage.url) {
     throw new ApiError(400, "Error while uploading cover image");
   }

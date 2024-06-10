@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
+import { extractPublicId } from "cloudinary-build-url";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -7,13 +8,16 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const uploadOnCloudinary = async (localFilePath) => {
+const uploadOnCloudinary = async (localFilePath, cloudinaryFolder) => {
   try {
     if (!localFilePath) return null;
     //upload local file to cloudinary
     const response = await cloudinary.uploader.upload(
       localFilePath,
-      { resource_type: "auto" },
+      {
+        folder: cloudinaryFolder,
+        resource_type: "auto",
+      },
       function (error, result) {
         console.log(result);
       }
@@ -32,17 +36,17 @@ const extractPublicIdFromUrl = (url) => {
   // Extract the part of the URL between "/upload/" and the file extension
   const urlParts = url.split("/");
   const filePart = urlParts[urlParts.length - 1]; // "sample.jpg"
-  const fileName = filePart.split(".")[0]; // "sample"
+  const fileName = urlParts[urlParts.length - 2] + "/" + filePart.split(".")[0]; // "sample"
   // const publicId = urlParts.slice(urlParts.indexOf('upload') + 1).join('/').replace(`/${filePart}`, `/${fileName}`);
   // return publicId;
   return fileName;
 };
 
-const deleteFromCloudinary = async (url) => {
+const deleteFromCloudinary = async (url, resourceType = "image") => {
   try {
-    const publicId = extractPublicIdFromUrl(url);
+    const publicId = extractPublicId(url);
     const response = await cloudinary.uploader.destroy(publicId, {
-      resource_type: "image",
+      resource_type: resourceType,
     });
     console.log("File deleted from Cloudinary successfully", response);
     return response;
