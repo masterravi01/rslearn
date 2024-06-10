@@ -5,7 +5,6 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
-
 const toggleSubscription = asyncHandler(async (req, res) => {
   const { channelId } = req.params;
   if (!channelId?.trim() || !isValidObjectId(channelId)) {
@@ -19,27 +18,28 @@ const toggleSubscription = asyncHandler(async (req, res) => {
 
   const isSubscribed = await Subscription.findOne({
     channel: channelId.trim(),
-    subscriber: req.user?._id
+    subscriber: req.user?._id,
   });
 
   let isSubscribing;
   if (!isSubscribed) {
     await Subscription.create({
       channel: channelId.trim(),
-      subscriber: req.user?._id
+      subscriber: req.user?._id,
     });
     isSubscribing = true;
   } else {
-    await Subscription.deleteOne({ channel: channelId.trim(), subscriber: req.user?._id });
+    await Subscription.deleteOne({
+      channel: channelId.trim(),
+      subscriber: req.user?._id,
+    });
     isSubscribing = false;
   }
 
-  const message = isSubscribing ? "Susbcribe channel success" : "Unsubscribe channel success";
-  res.status(200).json(new ApiResponse(
-    200,
-    {},
-    message
-  ));
+  const message = isSubscribing
+    ? "Susbcribe channel success"
+    : "Unsubscribe channel success";
+  res.status(200).json(new ApiResponse(200, {}, message));
 });
 
 // controller to return channel list to which user has subscribed
@@ -53,8 +53,8 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
   const channels = await Subscription.aggregate([
     {
       $match: {
-        subscriber: new mongoose.Types.ObjectId(channelId.trim())
-      }
+        subscriber: new mongoose.Types.ObjectId(channelId.trim()),
+      },
     },
     {
       $lookup: {
@@ -68,36 +68,36 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
               username: 1,
               fullname: 1,
               avatar: 1,
-            }
-          }
-        ]
-      }
+            },
+          },
+        ],
+      },
     },
     {
       $addFields: {
         channel: {
-          $first: "$channel"
-        }
-      }
+          $first: "$channel",
+        },
+      },
     },
     {
       $project: {
         channel: 1,
-        _id: 0
-      }
+        _id: 0,
+      },
     },
     {
       $replaceRoot: {
-        newRoot: "$channel"
-      }
-    }
+        newRoot: "$channel",
+      },
+    },
   ]);
 
-  res.status(200).json(new ApiResponse(
-    200,
-    channels,
-    "Get subscribed channel list success"
-  ));
+  res
+    .status(200)
+    .json(
+      new ApiResponse(200, channels, "Get subscribed channel list success")
+    );
 });
 
 // controller to return subscriber list of a channel
@@ -111,8 +111,8 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
   const subscribers = await Subscription.aggregate([
     {
       $match: {
-        channel: new mongoose.Types.ObjectId(subscriberId.trim())
-      }
+        channel: new mongoose.Types.ObjectId(subscriberId.trim()),
+      },
     },
     {
       $lookup: {
@@ -126,40 +126,36 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
               username: 1,
               fullname: 1,
               avatar: 1,
-            }
-          }
-        ]
-      }
+            },
+          },
+        ],
+      },
     },
     {
       $addFields: {
         subscribersList: {
-          $first: "$subscribersList"
-        }
-      }
+          $first: "$subscribersList",
+        },
+      },
     },
     {
       $project: {
         subscribersList: 1,
-        _id: 0
-      }
+        _id: 0,
+      },
     },
     {
       $replaceRoot: {
-        newRoot: "$subscribersList"
-      }
-    }
+        newRoot: "$subscribersList",
+      },
+    },
   ]);
 
-  res.status(200).json(new ApiResponse(
-    200,
-    subscribers,
-    "Get channel subscribers list success"
-  ));
-})
+  res
+    .status(200)
+    .json(
+      new ApiResponse(200, subscribers, "Get channel subscribers list success")
+    );
+});
 
-export {
-  toggleSubscription,
-  getUserChannelSubscribers,
-  getSubscribedChannels
-}
+export { toggleSubscription, getUserChannelSubscribers, getSubscribedChannels };

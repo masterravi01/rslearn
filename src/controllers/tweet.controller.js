@@ -1,8 +1,8 @@
-import mongoose, { isValidObjectId } from "mongoose"
-import { Tweet } from "../models/tweet.model.js"
-import { ApiError } from "../utils/ApiError.js"
-import { ApiResponse } from "../utils/ApiResponse.js"
-import { asyncHandler } from "../utils/asyncHandler.js"
+import mongoose, { isValidObjectId } from "mongoose";
+import { Tweet } from "../models/tweet.model.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 
 const createTweet = asyncHandler(async (req, res) => {
   const content = req.body?.content?.trim();
@@ -11,20 +11,19 @@ const createTweet = asyncHandler(async (req, res) => {
   }
   let tweet = await Tweet.create({
     content: content.trim(),
-    owner: req.user?._id
+    owner: req.user?._id,
   });
 
   if (!tweet) {
     throw new ApiError(500, "Something went wrong while creating tweet");
   }
 
-  tweet = await Tweet.findById(tweet._id).populate("owner", "fullname username avatar");
+  tweet = await Tweet.findById(tweet._id).populate(
+    "owner",
+    "fullname username avatar"
+  );
 
-  res.status(201).json(new ApiResponse(
-    201,
-    tweet,
-    "Create tweet success"
-  ));
+  res.status(201).json(new ApiResponse(201, tweet, "Create tweet success"));
 });
 
 const getUserTweets = asyncHandler(async (req, res) => {
@@ -44,8 +43,8 @@ const getUserTweets = asyncHandler(async (req, res) => {
   const tweets = await Tweet.aggregate([
     {
       $match: {
-        owner: new mongoose.Types.ObjectId(userId)
-      }
+        owner: new mongoose.Types.ObjectId(userId),
+      },
     },
     {
       $lookup: {
@@ -58,37 +57,33 @@ const getUserTweets = asyncHandler(async (req, res) => {
             $project: {
               fullname: 1,
               username: 1,
-              avatar: 1
-            }
-          }
-        ]
-      }
+              avatar: 1,
+            },
+          },
+        ],
+      },
     },
     {
       $addFields: {
         owner: {
-          $first: "$owner"
-        }
-      }
+          $first: "$owner",
+        },
+      },
     },
     {
       $sort: {
-        createdAt: -1
-      }
+        createdAt: -1,
+      },
     },
     {
-      $skip: (page - 1) * limit
+      $skip: (page - 1) * limit,
     },
     {
-      $limit: limit
-    }
+      $limit: limit,
+    },
   ]);
 
-  res.status(200).json(new ApiResponse(
-    200,
-    tweets,
-    "Get user tweets success"
-  ));
+  res.status(200).json(new ApiResponse(200, tweets, "Get user tweets success"));
 });
 
 const updateTweet = asyncHandler(async (req, res) => {
@@ -110,17 +105,17 @@ const updateTweet = asyncHandler(async (req, res) => {
     throw new ApiError(401, "You cannot update this tweet");
   }
 
-  tweet = await Tweet.findByIdAndUpdate(tweetId, {
-    $set: {
-      content
-    }
-  }, { new: true });
+  tweet = await Tweet.findByIdAndUpdate(
+    tweetId,
+    {
+      $set: {
+        content,
+      },
+    },
+    { new: true }
+  );
 
-  res.status(200).json(new ApiResponse(
-    200,
-    tweet,
-    "Tweet update success"
-  ));
+  res.status(200).json(new ApiResponse(200, tweet, "Tweet update success"));
 });
 
 const deleteTweet = asyncHandler(async (req, res) => {
@@ -140,16 +135,7 @@ const deleteTweet = asyncHandler(async (req, res) => {
 
   await Tweet.findByIdAndDelete(tweetId);
 
-  res.status(200).json(new ApiResponse(
-    200,
-    {},
-    "Tweet delete success"
-  ));
-})
+  res.status(200).json(new ApiResponse(200, {}, "Tweet delete success"));
+});
 
-export {
-  createTweet,
-  getUserTweets,
-  updateTweet,
-  deleteTweet
-}
+export { createTweet, getUserTweets, updateTweet, deleteTweet };
