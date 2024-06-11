@@ -1,0 +1,35 @@
+version: '3.9'
+
+services:
+  # MongoDB service
+  mongo_db:
+    container_name: db_container
+    image: mongo:latest
+    restart: always
+    volumes:
+      - mongo_db:/data/db
+
+  # Node.js API service
+  api:
+    build: .
+    ports:
+      - "8004:8000"
+    # Use a bind mount to mount local code into the container
+    volumes:
+      - .:/usr/src/app
+    environment:
+      PORT: 8000
+      MONGODB_URI: mongodb+srv://masterravi:masterravi01@cluster0.gsmf4.mongodb.net
+      CORS_ORIGIN: "*"
+      ACCESS_TOKEN_SECRET: "aUsjbkjvbGFIUnsjskjEbvsnvkuSykGByskvJjhskuuJybvsdvJFjDbcbhdsbvkjdERsbvshdmvnsb"
+      ACCESS_TOKEN_EXPIRY: "1d"
+      REFRESH_TOKEN_SECRET: "nitnbsutwGSSBgufdbjbGUGIkfrGTOljbIGVjnlidsEWhkItsecfKItevhjAncdKkiTEKIsdghDCU"
+      REFRESH_TOKEN_EXPIRY: "10d"
+      CLOUDINARY_CLOUD_NAME: "doq31j9zz"
+      CLOUDINARY_API_KEY: "253738664175414"
+      CLOUDINARY_API_SECRET: "rYyJ8STJO2T5UlQPO84oJZ2Ou2A"
+    depends_on:
+      - mongo_db
+
+volumes:
+  mongo_db: {}
