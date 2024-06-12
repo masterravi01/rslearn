@@ -14,9 +14,9 @@ services:
     build: .
     ports:
       - "8004:8000"
-    # Use a bind mount to mount local code into the container
     volumes:
       - .:/usr/src/app
+      - /usr/src/app/node_modules
     environment:
       PORT: 8000
       MONGODB_URI: mongodb+srv://masterravi:masterravi01@cluster0.gsmf4.mongodb.net
@@ -33,3 +33,4 @@ services:
 
 volumes:
   mongo_db: {}
+  node_modules: {}
