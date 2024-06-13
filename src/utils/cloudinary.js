@@ -32,15 +32,7 @@ const uploadOnCloudinary = async (localFilePath, cloudinaryFolder) => {
   }
 };
 
-const extractPublicIdFromUrl = (url) => {
-  // Extract the part of the URL between "/upload/" and the file extension
-  const urlParts = url.split("/");
-  const filePart = urlParts[urlParts.length - 1]; // "sample.jpg"
-  const fileName = urlParts[urlParts.length - 2] + "/" + filePart.split(".")[0]; // "sample"
-  // const publicId = urlParts.slice(urlParts.indexOf('upload') + 1).join('/').replace(`/${filePart}`, `/${fileName}`);
-  // return publicId;
-  return fileName;
-};
+
 
 const deleteFromCloudinary = async (url, resourceType = "image") => {
   try {

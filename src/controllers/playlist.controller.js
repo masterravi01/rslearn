@@ -159,7 +159,7 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
     throw new ApiError(401, "You cannot add video to this playlist");
   }
   const isExist = playlist.videos.findIndex(
-    (v) => v.toString() === video._id?.toString()
+    (v) => v.toString() === videoId?.toString()
   );
   if (isExist !== -1) {
     throw new ApiError(400, "This video is already in this playlist");
