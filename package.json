@@ -9,7 +9,9 @@
     "start": "nodemon src/index.js",
     "dev": "nodemon src/index.js",
     "format": "prettier --write .",
-    "lint": "npx eslint ."
+    "lint": "npx eslint .",
+    "lint:fix": "npx eslint --fix .",
+    "prepare": "husky"
   },
   "keywords": [
     "node"
@@ -33,7 +35,8 @@
     "@eslint/js": "^9.4.0",
     "eslint": "^9.4.0",
     "globals": "^15.4.0",
+    "husky": "^9.0.11",
     "nodemon": "^3.1.0",
-    "prettier": "^3.2.5"
+    "prettier": "^3.3.2"
   }
 }

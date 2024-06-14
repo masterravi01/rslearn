@@ -32,8 +32,6 @@ const uploadOnCloudinary = async (localFilePath, cloudinaryFolder) => {
   }
 };
 
-
-
 const deleteFromCloudinary = async (url, resourceType = "image") => {
   try {
     const publicId = extractPublicId(url);
