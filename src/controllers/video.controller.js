@@ -1,7 +1,4 @@
 import mongoose, { isValidObjectId } from "mongoose";
-import { Video } from "../models/video.model.js";
-import { Like } from "../models/like.model.js";
-import { Comment } from "../models/comment.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -13,6 +10,8 @@ import {
   CLOUD_THUMBNAIL_FOLDER_NAME,
   CLOUD_VIDEO_FOLDER_NAME,
 } from "../constants.js";
+
+import { Like, Video, Comment } from "../models/index.model.js";
 
 // eslint-disable-next-line no-unused-vars
 const getAllVideos_my = asyncHandler(async (req, res) => {
