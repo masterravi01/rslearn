@@ -8,6 +8,7 @@ import commentRoutes from "./comment.routes.js";
 import likeRoutes from "./like.routes.js";
 import playlistRoutes from "./playlist.routes.js";
 import dashboardRoutes from "./dashboard.routes.js";
+import paymentRoutes from "./payment.routes.js";
 
 const router = Router();
 
@@ -20,5 +21,6 @@ router.use("/comments", commentRoutes);
 router.use("/likes", likeRoutes);
 router.use("/playlists", playlistRoutes);
 router.use("/dashboard", dashboardRoutes);
+router.use("/payment", paymentRoutes);
 
 export default router;
