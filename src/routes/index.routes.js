@@ -9,10 +9,10 @@ import likeRoutes from "./like.routes.js";
 import playlistRoutes from "./playlist.routes.js";
 import dashboardRoutes from "./dashboard.routes.js";
 import paymentRoutes from "./payment.routes.js";
-
+import urlRoutes from "./url.routes.js";
 const router = Router();
 
-router.use("/users", userRoutes);
+router.use("/user", userRoutes);
 router.use("/healthcheck", healthcheckRoutes);
 router.use("/tweets", tweetRoutes);
 router.use("/subscriptions", subscriptionRoutes);
@@ -22,5 +22,6 @@ router.use("/likes", likeRoutes);
 router.use("/playlists", playlistRoutes);
 router.use("/dashboard", dashboardRoutes);
 router.use("/payment", paymentRoutes);
+router.use("/url", urlRoutes);
 
 export default router;

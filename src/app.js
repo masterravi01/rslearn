@@ -3,6 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { errorHandler } from "./middlewares/error.middlewares.js";
 import { morganMiddleware } from "./logger/morgan.logger.js";
+import path from "path";
 
 const app = express();
 
@@ -16,7 +17,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(express.json({ limit: "16kb" }));
-app.use(express.urlencoded({ extended: true, limit: "16kb" }));
+app.use(express.urlencoded({ extended: false, limit: "16kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
 app.use(morganMiddleware);
@@ -30,6 +31,9 @@ app.use("/api/v1", indexRouter);
 // Handling preflight requests
 // preflight requests sent by the browser to determine whether the actual request (e.g., a GET or POST request) is safe to send.
 app.options("*", cors());
+
+app.set("view engine", "ejs");
+app.set("views", path.join(path.resolve(), "src", "views"));
 
 app.use(errorHandler);
 
