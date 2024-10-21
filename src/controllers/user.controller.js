@@ -204,6 +204,9 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
+  //from logout from multiple devices we can use refreshtoken arrays,
+  // & in middleware check if req.refreshtoken present in user.refrsgtokens array or not .
+  // for single device logout pull that rfreshtoken from user.rfresh arry.
   await User.findByIdAndUpdate(
     req.user._id,
     {
