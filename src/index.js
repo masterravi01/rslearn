@@ -20,6 +20,6 @@ connectDB()
     logger.error("mongodb connection failed !!!", err);
   });
 
-app.get("/", (req, res) => {
+app.get("/zz", (req, res) => {
   res.send("Hello World!");
 });

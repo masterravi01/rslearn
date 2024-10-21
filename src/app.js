@@ -21,16 +21,32 @@ app.use(express.urlencoded({ extended: false, limit: "16kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
 app.use(morganMiddleware);
+// Create __dirname equivalent in ES module
+import http from "http";
+import { fileURLToPath } from "url"; // Import fileURLToPath for ES modules
 
+const __filename = fileURLToPath(import.meta.url); // Get the current module's URL
+const __dirname = path.dirname(__filename); // Get the directory name
 //routes import
 import indexRouter from "./routes/index.routes.js";
 
 //routes declaration
 app.use("/api/v1", indexRouter);
-
+const distDir = path.join(__dirname, "dist", "hotelpro-frontend", "browser"); // Use the new __dirname
+app.use(express.static(distDir));
+app.get("/*", (req, res) => {
+  res.sendFile(path.resolve(distDir, "index.html"));
+});
 // Handling preflight requests
 // preflight requests sent by the browser to determine whether the actual request (e.g., a GET or POST request) is safe to send.
-app.options("*", cors());
+app.options(
+  "*",
+  cors({
+    origin: true,
+
+    credentials: true,
+  })
+);
 
 app.set("view engine", "ejs");
 app.set("views", path.join(path.resolve(), "src", "views"));
